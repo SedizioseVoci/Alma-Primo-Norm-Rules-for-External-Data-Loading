@@ -1,0 +1,510 @@
+rule "rights"
+when 
+exist "//*[local-name()='mods']/*[local-name()='accessCondition']"
+then
+copy "//*[local-name()='mods']/*[local-name()='accessCondition']" to "dc."."rights"
+end
+
+rule "identifier"
+when 
+"//*[local-name()='mods']/*[local-name()='identifier']" not equals "doi:"
+then
+copy "//*[local-name()='mods']/*[local-name()='identifier']" to "dc."."identifier"
+end
+
+rule "notes"
+when
+exist "//*[local-name()='mods']/*[local-name()='note']"
+then
+copy "//*[local-name()='mods']/*[local-name()='note' and @type='thesis']" to "dc"."description"
+end
+
+rule "source replace 1"
+when
+(exist "//*[local-name()='mods']/*[local-name()='relatedItem'][@type='host']/child::*[local-name()='part']/child::*[local-name()='extent']/child::*[local-name()='start']/text()") and (exist "//*[local-name()='mods']/*[local-name()='relatedItem'][@type='host']/child::*[local-name()='part']/child::*[local-name()='extent']/child::*[local-name()='end']/text()")
+then
+copy "concat('pp. ',//*[local-name()='relatedItem']/*[local-name()='part']/*[local-name()='extent']/*[local-name()='start']/text(),'-',//*[local-name()='relatedItem']/*[local-name()='part']/*[local-name()='extent']/*[local-name()='end']/text())" to "dc"."source"
+end
+
+rule "source replace 2"
+when 
+exist "//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='part']/child::*[local-name()='detail'][@type='issue']/*[local-name()='number']/text()"
+then
+copy "concat('Issue ',//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='part']/child::*[local-name()='detail'][@type='issue']/*[local-name()='number']/text())" to "dc"."source"
+end
+
+rule "source replace 3"
+when
+exist "//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='part']/child::*[local-name()='detail'][@type='volume']/*[local-name()='number']/text()"
+then
+copy "concat('Vol. ',//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='part']/child::*[local-name()='detail'][@type='volume']/*[local-name()='number']/text())" to "dc"."source"
+end
+
+rule "source replace 4"
+when
+exist "//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='titleInfo']/child::*[local-name()='title']/text()"
+then
+copy "concat('Source: ',//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='titleInfo']/child::*[local-name()='title']/text())" to "dc"."description"
+end
+
+rule "matType Journal article"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Journal article"
+then
+set "articles" in "dc"."type"
+end
+
+rule "matType whitepaper"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "whitepaper"
+then
+set "articles" in "dc"."type"
+end
+
+rule "matType conference posters"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Conference Poster"
+then
+set "images" in "dc"."type"
+end
+
+rule "matType posters uncap"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Conference poster"
+then
+set "images" in "dc"."type"
+end
+
+rule "matType regular posters"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Poster"
+then
+set "images" in "dc"."type"
+end
+
+rule "genre e-books"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "e-books"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre periodicals"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "periodicals"
+then
+set "journal" in "dc"."type"
+end
+
+rule "conference proceedings"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Conference proceedings"
+then
+set "conference_proceedings" in "dc"."type"
+end
+
+rule "masters theses"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "masters theses"
+then
+set "dissertations" in "dc"."type"
+end
+
+rule "dissertations"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "doctoral dissertations"
+then
+set "dissertations" in "dc"."type"
+end
+
+rule "honors theses"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Departmental Honors Thesis"
+then
+set "dissertations" in "dc"."type"
+end
+
+rule "book chapters"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Book chapter"
+then
+set "book chapter" in "dc"."type"
+end
+
+rule "tech reports"
+when
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Technical report"
+then
+set "report" in "dc"."type"
+end
+
+rule "visual aids"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "visual aids (education tools)"
+then
+set "images" in "dc"."type"
+end
+
+rule "genre municipal plans"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "municipal plans (reports)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre municipal reports"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "reports"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre annual reports"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "annual reports"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre annuals publications"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "annuals (publications)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre surveys"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "surveys (documents)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre brochures"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "brochures"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "plain books"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "books"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre booklets"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "booklets"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre programs"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "programs (documents)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre pamphlets"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "pamphlets"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre guidebooks"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "guidebooks"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre speeches (documents)"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "speeches (documents)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre progress reports"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "progress reports"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre directories"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "directories"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre proceedings"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "proceedings"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "genre sheets"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "sheets (paper artifacts)"
+then
+set "ElectronicBooks" in "dc"."type"
+end
+
+rule "typeOfResource images"
+when 
+"//*[local-name()='mods']/*[local-name()='typeOfResource']" equals "still image"
+then
+set "images" in "dc"."type"
+end
+
+rule "typeOfResource mixed material"
+when 
+"//*[local-name()='mods']/*[local-name()='typeOfResource']" equals "mixed material"
+then
+set "archival_materials" in "dc"."type"
+end
+
+rule "manuscripts genre"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "manuscripts (document genre)"
+then
+set "archival_materials" in "dc"."type"
+end
+
+rule "manuscripts genre 2"
+when
+"//*[local-name()='mods']/*[local-name()='genre']" equals "manuscripts (documents)"
+then
+set "archival_materials" in "dc"."type"
+end
+
+rule "typeOfResource moving image"
+when 
+"//*[local-name()='mods']/*[local-name()='typeOfResource']" equals "moving image"
+then
+set "videos" in "dc"."type"
+end
+
+rule "matType video"
+when 
+"//*[local-name()='mods']/*[local-name()='note'][@displayLabel='matType']" equals "Video Documentary"
+then
+set "videos" in "dc"."type"
+end
+
+rule "typeOfResource cartographic"
+when 
+"//*[local-name()='mods']/*[local-name()='typeOfResource']" equals "cartographic"
+then
+set "maps" in "dc"."type"
+end
+
+rule "typeOfResource sound recording-nonmusical"
+when 
+"//*[local-name()='mods']/*[local-name()='typeOfResource']" equals "sound recording-nonmusical"
+then
+set "audios" in "dc"."type"
+end
+
+rule "subjectGeographic"
+when
+exist "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='geographic']"
+then
+copy "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='geographic']" to "dc."."coverage"
+end
+
+rule "subjectTopical"
+when 
+exist "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='topic']"
+then
+copy "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='topic']" to "dc."."subject"
+end
+
+rule "subjectName"
+when 
+exist "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='name']/child::*[local-name()='namePart']"
+then
+copy "//*[local-name()='mods']/*[local-name()='subject']/child::*[local-name()='name']/child::*[local-name()='namePart']" to "dc."."subject"
+end
+
+rule "ETD Keywords"
+when
+exist "//*[local-name()='mods']/*[local-name()='note' and @displayLabel='ETDkeywords']"
+then
+copy "//*[local-name()='mods']/*[local-name()='note' and @displayLabel='ETDkeywords']" to "dc"."subject"
+end
+
+rule "language"
+when
+exist "//*[local-name()='mods']/*[local-name()='language']/*[local-name()='languageTerm']"
+then
+copy "//*[local-name()='mods']/*[local-name()='language']/*[local-name()='languageTerm']" to "dc."."language"
+end
+
+rule "source replace relatedItem abstract"
+when
+exist "//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='abstract']"
+then
+copy "//*[local-name()='mods']/*[local-name()='relatedItem']/child::*[local-name()='abstract']" to "dc"."description"
+end
+
+rule "abstract"
+when 
+exist "//*[local-name()='mods']/*[local-name()='abstract']"
+then
+copy "//*[local-name()='mods']/*[local-name()='abstract']" to "dc."."description"
+end
+
+rule "publisher"
+when 
+exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='publisher']"
+then
+copy "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='publisher']" to "dc."."publisher"
+end
+
+rule "date ranges dateCreated"
+when
+(exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='start']") and (exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='end']")
+then
+copy "concat(//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='start'],'-',//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='end'])" to "dc"."date"
+end
+
+rule "date created 1 exclude date ranges"
+when 
+(exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated']") and (not exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='start']") and (not exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated'][@point='end']")
+then
+copy "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated']" to "dc."."date"
+end
+
+rule "date created 2 exclude date ranges"
+when 
+(exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateIssued']") and (not exist "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateCreated']")
+then
+copy "//*[local-name()='mods']/*[local-name()='originInfo']/child::*[local-name()='dateIssued']" to "dc."."date"
+end
+
+rule "extent"
+when
+"//*[local-name()='mods']/*[local-name()='physicalDescription']/child::*[local-name()='extent']" not equals "1 online resource"
+then 
+copy "//*[local-name()='mods']/*[local-name()='physicalDescription']/child::*[local-name()='extent']" to "dcterms"."extent"
+end
+
+rule "extent Niner Commons"
+when 
+exist "//*[local-name()='mods']/*[local-name()='genre']/text()"
+then
+copy "//*[local-name()='mods']/*[local-name()='genre']" to "dc."."format"
+end
+
+rule "Niner Commons affiliation"
+when 
+exist "//*[local-name()='mods']/*[local-name()='name' and @type='personal']/child::*[local-name()='affiliation']"
+then
+copy "concat('UNC Charlotte department: ',//*[local-name()='mods']/*[local-name()='name' and @type='personal']/child::*[local-name()='affiliation']/text())" to "dc"."description"
+end
+
+rule "Niner Commons contributor type"
+when
+exist "//*[local-name()='mods']/*[local-name()='note'][@displayLabel='UNCCConstituentType']"
+then 
+copy "concat('UNC Charlotte affiliate type: ',//*[local-name()='mods']/*[local-name()='note'][@displayLabel='UNCCConstituentType']/text())" to "dc"."description"
+end
+
+rule "name corporate 1"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='corporate']/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='corporate']/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name corporate 2"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='corporate']/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "creator"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='corporate']/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 10"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][10]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][10]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 9"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][9]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][9]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 8"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][8]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][8]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 7"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][7]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][7]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 6"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][6]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][6]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 5"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][5]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][5]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 4"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][4]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][4]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 3"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][3]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][3]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 2"
+when
+"//*[local-name()='mods']/*[local-name()='name' and @type='personal'][2]/child::*[local-name()='role']/child::*[local-name()='roleTerm']" equals "author"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][2]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "name personal 1"
+when
+exist "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][1]/child::*[local-name()='namePart']"
+then
+copy "//*[local-name()='mods']/*[local-name()='name' and @type='personal'][1]/child::*[local-name()='namePart']/text()" to "dc."."creator"
+end
+
+rule "title"
+when
+exist "//*[local-name()='mods']/*[local-name()='titleInfo']/child::*[local-name()='title']"
+then
+copy "//*[local-name()='mods']/*[local-name()='titleInfo']/child::*[local-name()='title']/text()" to "dc"."title"
+end
